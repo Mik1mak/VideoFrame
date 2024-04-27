@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <title>Video Frame</title>
+    <style type="text/css">
+        * {
+            background-color: black
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            place-items: center;
+            height: 100vh;
+        }
+        #video {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <video id="video" controls>
+            <source id="vid-src">
+        </video>
+    </div>
+</body>
+<script>
+    window.onload = () => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString)
+        const video = document.getElementById('video');
+
+        if(urlParams.has('vid')) {            
+            const source = document.getElementById("vid-src");
+            source.src = urlParams.get('vid');
+            
+            if(urlParams.has('vid-type')){
+            }
+            else {
+                source.type = "video/mp4";
+            }
+        }
+        if(urlParams.has('volume')) {
+            video.volume = urlParams.get('volume');
+        }
+        if(urlParams.has('muted')) {
+            video.muted = true;
+        }
+        if(urlParams.has('loop')) {
+            video.loop = true;
+        }
+        if(urlParams.has('autoplay')) {
+            video.autoplay = true;
+        }
+        video.load();
+        video.style.display = 'block';
+    };
+</script>
+</html>
