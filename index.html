@@ -1,63 +1,144 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width">
     <title>Video Frame</title>
-    <style type="text/css">
-        * {
+    <style>
+        html, body {
             background-color: black
         }
         body {
             margin: 0;
             padding: 0;
-            display: grid;
-            place-items: center;
-            height: 100vh;
+            display: block;
         }
-        #video {
+        .main {
+            object-fit: contain;
+            overflow: clip;
+            overflow-clip-margin: content-box;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+            max-height: 100%;
+            max-width: 100%;
+            margin: auto;
+        }
+        #alt {
+            background-color: whitesmoke;
             display: none;
+            padding-left: 10px;
+        }
+        input {
+            margin-bottom: 15px;
+        }
+        input[type="url"] {
+            width: 75vw;
         }
     </style>
 </head>
 
 <body>
-    <div>
-        <video id="video" controls>
-            <source id="vid-src">
-        </video>
-    </div>
-</body>
-<script>
-    window.onload = () => {
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString)
-        const video = document.getElementById('video');
+    <video id="video" class="main" controls>
+        <source id="vid-src" src="toReplace">
+        Your browser does not support the video tag.
+    </video>
+    <div id="alt" class="main">
+        <h1>Video Frame</h1>
+        <p>A static website for controlling linked video using URL Parameters.</p>
+        <label for="url-input">Your video URL:</label>
+        <input type="url" id="url-input" name="url-input"><br>
+        <label for="url-type">Your video type:</label>
+        <input type="text" id="url-type" name="url-type" value="video/mp4"><br>
 
-        if(urlParams.has('vid')) {            
-            const source = document.getElementById("vid-src");
-            source.src = urlParams.get('vid');
+        <label for="volume-input">volume:</label>
+        <input type="range" id="volume-input" name="volume-input" min="0" max="1" step="0.05" value="1">
+        <output id="value-output"></output><br>
+
+        <label for="muted-input">muted:</label>
+        <input type="checkbox" id="muted-input" name="muted-input"><br>
+        <label for="loop-input">loop:</label>
+        <input type="checkbox" id="loop-input" name="loop-input"><br>
+        <label for="autoplay-input">autoplay:</label>
+        <input type="checkbox" id="autoplay-input" name="autoplay-input"><br>
+
+        <label for="url-input">Output URL:</label>
+        <a type="url" id="url-output" href="toReplace"></a>
+    </div>
+    <script>
+        const urlOutput = document.querySelector('#url-output');
+        const urlInput = document.querySelector('#url-input');
+        const urlType = document.querySelector('#url-type');
+        const mutedInput = document.querySelector('#muted-input');
+        const loopInput = document.querySelector('#loop-input');
+        const autoplayInput = document.querySelector('#autoplay-input');
+        const volumeInput = document.querySelector("#volume-input");
+        const volumeOutput = document.querySelector("#value-output");
+    
+        const updateOutput = (event) => {
+            volumeOutput.textContent = volumeInput.value;
+    
+            if(urlInput.value == '') {
+                urlOutput.href = urlOutput.innerHTML = '';
+                return;
+            }
+    
+            var result = window.location.href;
+            result += '?vid=' + encodeURI(urlInput.value);
+            result += '&vid-type=' + encodeURI(urlType.value);
+    
+            if(mutedInput.checked)
+                result += '&muted';
+            if(loopInput.checked)
+                result += '&loop';
+            if(autoplayInput.checked)
+                result += '&autoplay';
+            if(volumeInput.value != 1)
+                result += '&volume=' + volumeInput.value;
             
-            if(urlParams.has('vid-type')){
+            urlOutput.href = urlOutput.innerHTML = result;
+        };
+        updateOutput(null);
+        for(const input of [volumeInput, autoplayInput, loopInput, mutedInput, urlType, urlInput])
+            input.addEventListener("input", updateOutput);
+    
+        window.onload = () => {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString)
+            const video = document.querySelector('#video');
+    
+            if(urlParams.has('vid')) {            
+                const source = document.querySelector("#vid-src");
+                source.src = urlParams.get('vid');
+                document.title = source.src;
+                
+                if(urlParams.has('vid-type')){
+                    source.type = urlParams.get('vid-type');
+                }
+                else {
+                    source.type = "video/mp4";
+                }
+    
+                if(urlParams.has('volume')) {
+                    video.volume = urlParams.get('volume');
+                }
+                if(urlParams.has('muted')) {
+                    video.muted = true;
+                }
+                if(urlParams.has('loop')) {
+                    video.loop = true;
+                }
+                if(urlParams.has('autoplay')) {
+                    video.autoplay = true;
+                }
+                video.load();
             }
             else {
-                source.type = "video/mp4";
+                video.style.display = 'none';
+                document.querySelector("#alt").style.display = 'block';
             }
-        }
-        if(urlParams.has('volume')) {
-            video.volume = urlParams.get('volume');
-        }
-        if(urlParams.has('muted')) {
-            video.muted = true;
-        }
-        if(urlParams.has('loop')) {
-            video.loop = true;
-        }
-        if(urlParams.has('autoplay')) {
-            video.autoplay = true;
-        }
-        video.load();
-        video.style.display = 'block';
-    };
-</script>
+        };
+    </script>
+</body>
 </html>
