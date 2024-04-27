@@ -85,8 +85,8 @@
             }
     
             var result = window.location.href;
-            result += '?vid=' + encodeURI(urlInput.value);
-            result += '&vid-type=' + encodeURI(urlType.value);
+            result += '?src=' + encodeURI(urlInput.value);
+            result += '&src-type=' + encodeURI(urlType.value);
     
             if(mutedInput.checked)
                 result += '&muted';
@@ -108,13 +108,13 @@
             const urlParams = new URLSearchParams(queryString)
             const video = document.querySelector('#video');
     
-            if(urlParams.has('vid')) {            
+            if(urlParams.has('src')) {            
                 const source = document.querySelector("#vid-src");
-                source.src = urlParams.get('vid');
+                source.src = urlParams.get('src');
                 document.title = source.src;
                 
-                if(urlParams.has('vid-type')){
-                    source.type = urlParams.get('vid-type');
+                if(urlParams.has('src-type')){
+                    source.type = urlParams.get('src-type');
                 }
                 else {
                     source.type = "video/mp4";
